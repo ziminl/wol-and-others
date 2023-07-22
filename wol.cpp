@@ -4,6 +4,7 @@
 #include <vector>
 #include <chrono>
 #include <thread>
+
 #ifdef _WIN32
 #include <winsock2.h>
 #include <Ws2tcpip.h>
@@ -36,7 +37,7 @@ std::vector<uint8_t> createMagicPacket(const std::vector<uint8_t>& macAddress) {
 }
 
 int main() {
-    //change mac add
+    // Change the MAC address here
     const std::string targetMacAddress = "00:11:22:33:44:55";
     std::vector<uint8_t> macAddressBytes = parseMACAddress(targetMacAddress);
     std::vector<uint8_t> magicPacket = createMagicPacket(macAddressBytes);
@@ -87,7 +88,7 @@ int main() {
     sockaddr_in targetAddr;
     targetAddr.sin_family = AF_INET;
     targetAddr.sin_port = htons(9);
-    inet_pton(AF_INET, "255.255.255.255", &(targetAddr.sin_addr));
+    targetAddr.sin_addr.s_addr = INADDR_BROADCAST;
     if (sendto(sock, magicPacket.data(), magicPacket.size(), 0, (sockaddr*)&targetAddr, sizeof(targetAddr)) < 0) {
         std::cerr << "Failed to send magic packet. Error: " << strerror(errno) << std::endl;
     } else {
@@ -95,7 +96,6 @@ int main() {
     }
     close(sock);
 #endif
+
     return 0;
 }
-
-
